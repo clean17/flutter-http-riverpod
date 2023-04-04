@@ -15,18 +15,30 @@ class PostRepository {
     return _instance;
   }
 
-  Future<List<Post>> findAll(){
-    final homePagePostDto = [
-      Post(id: 1, title: "제목1"),
-      Post(id: 2, title: "제목2"),
-      Post(id: 3, title: "제목3"),
-      Post(id: 4, title: "제목4"),
-    ];
-    return Future.delayed(Duration(seconds: 1), () => homePagePostDto,);
+  Future<List<Post>> findAll() {
+    return Future.delayed(Duration(seconds: 1), () {
+      return [
+        Post(id: 1, title: "제목1"),
+        Post(id: 2, title: "제목2"),
+        Post(id: 3, title: "제목3"),
+      ];
+    });
   }
 
-  Future<Post>? save(String title){
-    // save할때는 데이터를 영속화해야 함 -> 영속화된 데이터를 반환받음
-    return Future.delayed(Duration(seconds: 1), () => Post(id: 5, title: title),);
+  // save할때는 데이터를 영속화해야 함 -> 영속화된 데이터를 반환받음
+  Future<Post> save(String title) {
+    return Future.delayed(Duration(seconds: 1), () {
+      return Post(id: 4, title: title);
+    });
+  }
+
+  Future<void> deleteById(int id) {
+    return Future.delayed(Duration(seconds: 1));
+  }
+
+  Future<Post> update(Post post) {
+    return Future.delayed(Duration(seconds: 1), () {
+      return post;
+    });
   }
 }

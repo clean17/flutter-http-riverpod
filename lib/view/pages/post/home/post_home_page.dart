@@ -4,11 +4,8 @@ import 'package:flutter_http_riverpod/model/post/post.dart';
 import 'package:flutter_http_riverpod/view/pages/post/home/post_home_page_view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
 class PostHomePage extends ConsumerWidget {
   const PostHomePage({Key? key}) : super(key: key);
-
-  // 어제까지는 퓨처로 데이터를 가져와서 리턴했지만 + read
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,49 +15,71 @@ class PostHomePage extends ConsumerWidget {
     return Scaffold(
       body: Column(
         children: [
-          // watch를 사용할경우 if로 분기해야한다
-          pm != null
-              ? _buildExpanded(pm.posts)
-              : _buildExpanded([]),
-
-          ElevatedButton(
-            onPressed: () {
-              pc.findPosts();
-            },
-            child: Text("페이지로드"),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              pc.addPost("제목5");
-            },
-            child: Text("추가"),
+          Expanded(
+              child: pm != null ? buildListView(pm.posts) : buildListView([])),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        pc.findPosts();
+                      },
+                      child: Text("페이지로드"),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        pc.addPost("제목추가");
+                      },
+                      child: Text("한건추가"),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        pc.removePost(1);
+                      },
+                      child: Text("한건삭제"),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        pc.updatePost(Post(id: 2, title: "제목수정"));
+                      },
+                      child: Text("한건수정"),
+                    )
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Expanded _buildExpanded(List<Post>? posts) {
-    return Expanded(
-      child: ListView.builder(
-        itemCount: posts!.length,
-        itemBuilder: (context, index) {
-          return Column(
-            children: [
-              Container(
-                decoration: BoxDecoration(color: Colors.green[100]),
-                height: 150,
-                child: ListTile(
-                  leading: Text("${posts[index].id}"),
-                  title: Text("타이틀"),
-                  subtitle: Text("서브타이틀"),
-                ),
+  Widget buildListView(List<Post> posts) {
+    return ListView.builder(
+      itemCount: posts.length,
+      itemBuilder: (context, index) {
+        return Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(color: Colors.green[100]),
+              height: 100,
+              child: ListTile(
+                leading: Text("${posts[index].id}"),
+                title: Text("${posts[index].title}"),
               ),
-              Divider(),
-            ],
-          );
-        },
-      ),
+            ),
+            Divider(),
+          ],
+        );
+      },
     );
   }
 }

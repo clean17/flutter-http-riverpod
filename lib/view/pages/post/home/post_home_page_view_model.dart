@@ -1,6 +1,5 @@
 import 'package:flutter_http_riverpod/model/post/post.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 // 이 파일의 목적은 홈페이지에서 사용될 모델을 다운, 저장, 관리
 
 
@@ -31,13 +30,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // StateNotifierProvider 첫번째 인자는 관리하려는 스토어를 넣는다.
 // StateNotifierProvider 두번째 인자는 스토어에서 관리할 상태를 넣는다.
 final postHomePageProvider = StateNotifierProvider<PostHomePageViewModel, PostHomePageModel?>((ref) {
-  return PostHomePageViewModel(null); // 마지막에는 컨트롤러의 null 체크 때문에 물음표 추가했음
+  return PostHomePageViewModel(null);
+  // 마지막에는 컨트롤러의 null 체크 때문에 물음표 추가했음
   // return PostHomePageProvider(HomePageModel()); // required 를 사용하면 매번 코드를 수정해야한다.
 });
 
 
 // HomePageModel 를 관리하는 PostHomePageViewModel 스토어(창고)
-class PostHomePageViewModel extends StateNotifier<PostHomePageModel?> {
+class PostHomePageViewModel extends StateNotifier<PostHomePageModel?>{
   PostHomePageViewModel(super.state);
 // 스토어를 관리하기 위해서 관리하는 메소드가 필요하다.
 // StateNotifier 가 가지고 있는 여러 메소드를 이용해볼까
@@ -48,7 +48,7 @@ class PostHomePageViewModel extends StateNotifier<PostHomePageModel?> {
 
   // save 기능 추가 ( 프로바이더에 저장 )
   void add(Post post) {
-    List<Post> posts = state.posts;
+    List<Post> posts = state!.posts;
 
     // 변경 감지는 !!!! 레퍼런스 주소가 달라져야 작동한다 !!! 기존의 배열에 추가하면 변경 감지하지 않음
     // 즉 여기서는 state가 배열이지만 기존의 state에 데이터를 추가하더라도 레퍼런스 동일.. 변경 x
@@ -58,16 +58,33 @@ class PostHomePageViewModel extends StateNotifier<PostHomePageModel?> {
     // 다시 그릴때 플러터가 다시 확인해서 값이 같으면 그리지 않는다.
     // 즉 riverpod을 사용하면 알아서 다 해준다. !!!!!!!!!!!!!
 
-    state = newPosts;
+    state = PostHomePageModel(posts: newPosts);
+  }
+
+  void remove(int id){
+    List<Post> posts = state!.posts;
+
+    // 조건에 따라 검색 ,, 내가 넣은 id 검색 or 삭제
+    // 조건이 맞으면 리스트 반환
+    List<Post> newPosts = posts.where((e) => e.id != id).toList(); // where 이 참이야 거짓이야 ?
+    state = PostHomePageModel(posts: newPosts);
+  }
+
+  void update(Post post){
+    List<Post> posts = state!.posts;
+    List<Post> newPosts = posts.map((e) => e.id == post.id ? post : e).toList();
+    state = PostHomePageModel(posts: newPosts);
   }
 }
 
 // 스토어 데이터
 class PostHomePageModel {
   // 여러 데이터를 가지므로 리스트를 가진다.
-  List<Post>? posts; // required 를 사용하면 매번 코드를 수정해야 하므로 ? 사용
-  PostHomePageModel({this.posts});
+  List<Post> posts; // required 를 사용하면 매번 코드를 수정해야 하므로 ? 사용
+  PostHomePageModel({required this.posts});
 }
+
+
 
 // 데이터가 변하기 때문에 불변성을 가진 모델은 부적합
 // 재사용하지 않고 여기서만 사용한다.

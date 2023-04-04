@@ -23,9 +23,19 @@ class PostController {
 
   // 추가하는 기능은 Future<void> 로 만들어야함 ! 비동기 !!
   Future<void> addPost(String title) async {
-    Post? post = await PostRepository().save(title);
+    Post post = await PostRepository().save(title);
     // 이후 Provider에 데이터를 넣어야 함.
     ref.read(postHomePageProvider.notifier).add(post);
+  }
+
+  Future<void> removePost(int id) async {
+    PostRepository().deleteById(id); // 서버에 요청을 하면서
+    ref.read(postHomePageProvider.notifier).remove(id); // Provider에서 제거
+  }
+
+  Future<void> updatePost(Post post) async {
+    Post postPS = await PostRepository().update(post);
+    ref.read(postHomePageProvider.notifier).update(postPS);
   }
 }
 
