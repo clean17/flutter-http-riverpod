@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_http_riverpod/view/home/home_page.dart';
+import 'package:flutter_http_riverpod/view/pages/post/home/post_home_page.dart';
+import 'package:flutter_http_riverpod/view/pages/post/home/post_home_page_view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // We create a "provider", which will store a value (here "Hello world").
@@ -24,7 +25,7 @@ class MyApp extends ConsumerWidget {
     final String value = ref.watch(helloWorldProvider);
 
     return MaterialApp(
-      home: HomePage(),
+      home: PostHomePage(),
     );
   }
 }

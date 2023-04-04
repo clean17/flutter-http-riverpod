@@ -1,8 +1,8 @@
-import 'package:flutter_http_riverpod/repository/post_repository.dart';
+import 'package:flutter_http_riverpod/model/post/post.dart';
+import 'package:flutter_http_riverpod/model/post/post_repository.dart';
+import 'package:flutter_http_riverpod/view/pages/post/home/post_home_page_view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../dto/post_response_dto.dart';
-import '../view/home/home_page_view_model.dart';
 
 final postController = Provider<PostController>((ref) {
   return PostController(ref);
@@ -17,8 +17,15 @@ class PostController {
   // 스토어에 데이터를 저장한다.
   // 이제 뷰에서 프로바이더를 watch하고 있다가 build를 호출하면 된다.
   Future<void> findPosts() async {
-    List<PostDto> homePagePostDto = await PostRepository().findAll();
-    ref.read(homePageViewModel.notifier).state = HomePageModel(posts: homePagePostDto);
+    List<Post> homePagePostDto = await PostRepository().findAll();
+    ref.read(postHomePageProvider.notifier).state = PostHomePageModel(posts: homePagePostDto);
+  }
+
+  // 추가하는 기능은 Future<void> 로 만들어야함 ! 비동기 !!
+  Future<void> addPost(String title) async {
+    Post? post = await PostRepository().save(title);
+    // 이후 Provider에 데이터를 넣어야 함.
+    ref.read(postHomePageProvider.notifier).add(post);
   }
 }
 
