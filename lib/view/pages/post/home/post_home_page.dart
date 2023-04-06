@@ -10,42 +10,58 @@ class PostHomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     PostController pc = ref.read(postController);
-    PostHomePageModel? pm = ref.watch(postHomePageProvider); // 프로바이더를 지켜본다.
+
+    // PostHomePageModel? pm = ref.watch(postHomePageProvider); // 프로바이더를 지켜본다.
 
     return Scaffold(
       body: Column(
         children: [
           Expanded(
-              child:
-                  // pm != null ? buildListView(pm.posts) : buildListView([])),
-                  FutureBuilder(
-            future: pc.findPosts(), // 비동기 함수를 호출합니다.
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                // Future 작업이 완료된 경우
-                if (snapshot.hasData) {
-                  // 데이터가 있는 경우
-                  return _buildMainScreen(snapshot.data); // 화면을 구성하는 함수를 호출합니다.
-                } else {
-                  // 데이터가 없는 경우
-                  return _buildErrorScreen(); // 오류 화면을 구성하는 함수를 호출합니다.
+            child: Consumer(
+              builder: (context, ref, child) {
+                pc.findPosts();
+                PostHomePageModel? pm = ref.watch(postHomePageProvider);
+                if (pm == null) {
+                  return Center(child: CircularProgressIndicator());
                 }
-              } else {
-                // Future 작업이 완료되지 않은 경우
-                return _buildLoadingScreen(); // 로딩 화면을 구성하는 함수를 호출합니다.
-              }
-            },
-          )),
+                return buildListView(pm!.posts);
+              },
+            ),
+
+                // pm != null ? buildLoding(pc, pm) : buildListView([]),
+                // pm != null ? buildListView(pm.posts) : buildListView([]),
+            //     FutureBuilder(
+            //   future: pc.findPosts(), // 비동기 함수를 호출합니다.
+            //   builder: (BuildContext context, AsyncSnapshot snapshot) {
+            //     if (snapshot.connectionState == ConnectionState.done) {
+            //       // Future 작업이 완료된 경우
+            //       if (snapshot.hasData) {
+            //         // 데이터가 있는 경우
+            //         return _buildMainScreen(
+            //             snapshot.data); // 화면을 구성하는 함수를 호출합니다.
+            //       } else {
+            //         // 데이터가 없는 경우
+            //         return _buildErrorScreen(); // 오류 화면을 구성하는 함수를 호출합니다.
+            //       }
+            //     } else {
+            //       // Future 작업이 완료되지 않은 경우
+            //       return _buildLoadingScreen(); // 로딩 화면을 구성하는 함수를 호출합니다.
+            //     }
+            //   },
+            // ),
+          ),
           buildButton(pc),
         ],
       ),
     );
   }
 
-
+  // Widget buildLoding (PostController pc, PostHomePageModel pm){
+  //   pc.findPosts();
+  //   return buildListView(pm.posts);
+  // }
 
   Widget _buildMainScreen(List<Post> posts) {
-    // 데이터를 사용하여 화면을 구성하는 코드를 작성합니다.
     return ListView.builder(
       itemCount: posts.length,
       itemBuilder: (context, index) {
@@ -63,18 +79,18 @@ class PostHomePage extends ConsumerWidget {
           ],
         );
       },
-    );// 예시 코드
+    ); // 예시 코드
   }
 
   Widget _buildErrorScreen() {
-    // 오류 메시지를 보여주는 화면을 구성하는 코드를 작성합니다.
     return Container(
-      child: Center(child: Text("실패"),),
+      child: Center(
+        child: Text("실패"),
+      ),
     ); // 예시 코드
   }
 
   Widget _buildLoadingScreen() {
-    // 로딩 화면을 구성하는 코드를 작성합니다.
     return Container(
       child: Center(child: Text("로딩중")),
     ); // 예시 코드
