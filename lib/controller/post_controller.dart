@@ -16,9 +16,10 @@ class PostController {
   // 레파지토리를 호출해서 다운을 받고
   // 스토어에 데이터를 저장한다.
   // 이제 뷰에서 프로바이더를 watch하고 있다가 build를 호출하면 된다.
-  Future<void> findPosts() async {
+  Future<List<Post>> findPosts() async {
     List<Post> homePagePostDto = await PostRepository().findAll();
-    ref.read(postHomePageProvider.notifier).state = PostHomePageModel(posts: homePagePostDto);
+    return homePagePostDto;
+    // ref.read(postHomePageProvider.notifier).state = PostHomePageModel(posts: homePagePostDto);
   }
 
   // 추가하는 기능은 Future<void> 로 만들어야함 ! 비동기 !!
