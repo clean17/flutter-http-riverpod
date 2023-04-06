@@ -21,10 +21,11 @@ class PostHomePage extends ConsumerWidget {
               builder: (context, ref, child) {
                 pc.findPosts();
                 PostHomePageModel? pm = ref.watch(postHomePageProvider);
-                if (pm == null) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                return buildListView(pm!.posts);
+                return pm != null ? buildListView(pm.posts) : Center(child: CircularProgressIndicator());
+                // if (pm == null) {
+                //   return Center(child: CircularProgressIndicator());
+                // }
+                // return buildListView(pm!.posts);
               },
             ),
 
